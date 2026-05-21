@@ -389,12 +389,39 @@ class AINSClaim:
         hardware_hash = identity.fingerprint_full
         public_key_b64 = identity.public_key_b64
 
-        body = {
-            "requested_name": clean,
-            "hardware_hash": hardware_hash,
-            "public_key": public_key_b64,
-            "tier": tier.upper(),
-        }
+        # v0.9.0 — fresh `.aint` claim requires Ed25519 proof-of-possession.
+        # Step 1: ask the server for a challenge bound to (public_key, name).
+        # Step 2: sign the server-supplied sign_target with our private key.
+        # Step 3: submit the claim with challenge_id + signature.
+        #
+        # Sub-domain recovery (requested_name contains "." e.g. storm.vandemeent)
+        # short-circuits server-side on hardware_hash + ParentAttest device_rebind
+        # and is unaffected by this gate.
+        if "." in clean:
+            # Sub-domain recovery path — no challenge needed.
+            body = {
+                "requested_name": clean,
+                "hardware_hash": hardware_hash,
+                "public_key": public_key_b64,
+                "tier": tier.upper(),
+            }
+        else:
+            challenge_resp = self._request(
+                "POST",
+                "/api/ainternet/claim/challenge",
+                json={"public_key": public_key_b64, "requested_name": clean},
+            )
+            challenge_id = challenge_resp["challenge_id"]
+            sign_target = challenge_resp["sign_target"]
+            signature_b64 = identity.sign_b64(sign_target.encode("utf-8"))
+            body = {
+                "requested_name": clean,
+                "hardware_hash": hardware_hash,
+                "public_key": public_key_b64,
+                "tier": tier.upper(),
+                "challenge_id": challenge_id,
+                "signature": signature_b64,
+            }
         result = self._request("POST", "/api/ainternet/claim", json=body)
 
         # Persist the keypair + the resulting session_token alongside
@@ -441,5 +468,31 @@ class AINSClaim:
             result["_birth_hash"] = f"upip:sha256:{birth_hash}"
         except Exception:
             pass
+
+        # Best-effort I-Poll registration so ``cmail`` and inbox-read work
+        # immediately on the freshly-claimed identity. The server's
+        # AINS-fallback in ``is_agent_approved`` covers identities that
+        # skip this step, so failure here is non-fatal and silent.
+        try:
+            actual_domain = result.get("actual_domain", f"{clean}.aint")
+            agent_id = actual_domain.replace(".aint", "")
+            session_token = result.get("session_token")
+            register_headers: Dict[str, str] = {}
+            if session_token:
+                register_headers["Authorization"] = f"Bearer {session_token}"
+            register_body = {
+                "agent_id": agent_id,
+                "description": f"Auto-registered by ainternet claim (tier={tier})",
+                "capabilities": ["push", "pull"],
+            }
+            register_resp = self._request(
+                "POST",
+                "/api/ipoll/register",
+                json=register_body,
+                headers=register_headers,
+            )
+            result["_ipoll_registered"] = register_resp.get("status", "ok")
+        except Exception as e:
+            result["_ipoll_registered"] = f"skip:{type(e).__name__}"
 
         return result
