@@ -185,7 +185,7 @@ class AINSClaim:
         timeout: Request timeout in seconds
     """
 
-    DEFAULT_HUB = "https://brein.jaspervandemeent.nl"
+    DEFAULT_HUB = "https://api.ainternet.org"
 
     def __init__(self, base_url: str = None, timeout: int = 30):
         self.base_url = (base_url or self.DEFAULT_HUB).rstrip("/")

@@ -103,8 +103,10 @@ class AINS:
         ...     print(f"{d.domain}: trust={d.trust_score}")
     """
 
-    # Default AInternet hub
-    DEFAULT_HUB = "https://brein.jaspervandemeent.nl"
+    # Default AInternet hub (= production endpoint as of v0.9.1).
+    # The legacy brein.jaspervandemeent.nl alias still mirrors the same API
+    # but new clients should default to api.ainternet.org.
+    DEFAULT_HUB = "https://api.ainternet.org"
 
     def __init__(self, base_url: str = None, timeout: int = 30):
         self.base_url = (base_url or self.DEFAULT_HUB).rstrip("/")

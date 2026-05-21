@@ -60,7 +60,7 @@ def _print_tree(project_dir: str, files: list[str]):
 
 def init_project(
     name: str,
-    hub: str = "https://brein.jaspervandemeent.nl",
+    hub: str = "https://api.ainternet.org",
     generate_identity: bool = True,
     directory: str = None,
 ):

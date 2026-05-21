@@ -125,8 +125,9 @@ class AInternet:
         >>> messages = ai.receive()
     """
 
-    # Public hub - anyone can connect
-    DEFAULT_HUB = "https://brein.jaspervandemeent.nl"
+    # Public hub - anyone can connect. v0.9.1: api.ainternet.org is canonical;
+    # brein.jaspervandemeent.nl still mirrors for back-compat.
+    DEFAULT_HUB = "https://api.ainternet.org"
 
     def __init__(
         self,

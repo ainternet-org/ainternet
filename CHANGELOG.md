@@ -5,6 +5,33 @@ All notable changes to the `ainternet` package are documented here.
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1] — 2026-05-21
+
+### Changed (production default flip — back-compat preserved)
+
+- **`DEFAULT_HUB` switched from `https://brein.jaspervandemeent.nl`
+  to `https://api.ainternet.org`** across all client classes
+  (`AInternet`, `AINS`, `IPoll`, `AINSClaim`) and CLI defaults
+  (`scaffold.init_project`, `ainternet init`, `PUBLIC_AINS_BASE`).
+  The legacy `brein.jaspervandemeent.nl` URL still mirrors the same
+  API and is detected by route-truth checks for same-host
+  short-circuit (`post_send`), so existing users with explicit
+  `base_url="https://brein.jaspervandemeent.nl"` continue to work
+  unchanged.
+
+### Why
+
+`api.ainternet.org` is the canonical production endpoint as of the
+dedicated-subdomain rollout (mid-May 2026). New `pip install
+ainternet && ainternet claim` users were still landing on
+`brein.jaspervandemeent.nl` — the personal hostname — which is
+fine functionally but wrong as the default presentation of the
+network. This release closes that gap.
+
+The legacy URL is **not** deprecated; it continues to be a
+first-class alias and is documented as such in the http-api
+reference.
+
 ## [0.9.0] — 2026-05-21
 
 ### Changed (BREAKING for fresh-claim flow — backward-compatible for sub-domain recovery)

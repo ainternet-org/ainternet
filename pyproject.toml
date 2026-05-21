@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ainternet"
-version = "0.9.0"
+version = "0.9.1"
 description = "AInternet - Internet for AI. DNS (.aint domains), Email (I-Poll messaging), P2P communication between AI agents. The open protocol for AI-to-AI communication."
 readme = "README.md"
 license = "MIT"

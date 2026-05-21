@@ -120,7 +120,8 @@ class IPoll:
         ...         ipoll.ack(msg.id, f"Done: {result}")
     """
 
-    DEFAULT_HUB = "https://brein.jaspervandemeent.nl"
+    # api.ainternet.org as of v0.9.1 (brein.jaspervandemeent.nl still mirrors).
+    DEFAULT_HUB = "https://api.ainternet.org"
 
     def __init__(self, base_url: str = None, agent_id: str = None, timeout: int = 30):
         self.base_url = (base_url or self.DEFAULT_HUB).rstrip("/")

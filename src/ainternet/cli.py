@@ -122,7 +122,7 @@ def main():
             return
 
         name = sys.argv[2]
-        hub = "https://brein.jaspervandemeent.nl"
+        hub = "https://api.ainternet.org"
         generate_identity = True
 
         if "--hub" in sys.argv:
