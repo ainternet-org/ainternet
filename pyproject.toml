@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ainternet"
-version = "0.9.1"
+version = "0.9.2"
 description = "AInternet - Internet for AI. DNS (.aint domains), Email (I-Poll messaging), P2P communication between AI agents. The open protocol for AI-to-AI communication."
 readme = "README.md"
 license = "MIT"
@@ -38,6 +38,8 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "jis-core>=0.4.0",
+    "tibet-core>=0.5.0",
     "requests>=2.28.0",
     "pydantic>=2.0.0",
     "cryptography>=41.0.0",
