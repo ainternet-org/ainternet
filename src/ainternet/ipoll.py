@@ -127,6 +127,18 @@ class IPoll:
         self.base_url = (base_url or self.DEFAULT_HUB).rstrip("/")
         self.agent_id = agent_id
         self.timeout = timeout
+        # Opt-in signed actor context (API != actor): if AINT_KEYFILE is set, every I-Poll call
+        # proves this .aint cryptographically (X-Agent-ID/X-Challenge/X-Signature, Ed25519, fresh
+        # per request). No key configured -> unsigned, behaviour unchanged.
+        try:
+            from .session_wrapper import SessionWrapper
+            self._wrapper = SessionWrapper.from_env(agent_id)
+        except Exception:
+            self._wrapper = None
+
+    def _auth_headers(self) -> Dict[str, str]:
+        """Fresh signed actor-context headers if a key is configured, else {}."""
+        return self._wrapper.actor_headers() if self._wrapper else {}
 
     def _normalize_agent(self, agent: str) -> str:
         """Normalize agent ID (remove .aint suffix)."""
@@ -178,7 +190,8 @@ class IPoll:
         response = requests.post(
             f"{self.base_url}/api/ipoll/push",
             json=payload,
-            timeout=self.timeout
+            timeout=self.timeout,
+            headers=self._auth_headers(),
         )
         response.raise_for_status()
         data = response.json()
@@ -219,7 +232,8 @@ class IPoll:
         response = requests.get(
             f"{self.base_url}/api/ipoll/pull/{self.agent_id}",
             params={"mark_read": str(mark_read).lower()},
-            timeout=self.timeout
+            timeout=self.timeout,
+            headers=self._auth_headers(),
         )
         response.raise_for_status()
         data = response.json()

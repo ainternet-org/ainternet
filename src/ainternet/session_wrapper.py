@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import secrets
 import time
 from pathlib import Path
@@ -73,3 +74,21 @@ class SessionWrapper:
             "X-Challenge": ch,
             "X-Signature": self.sign(ch),
         }
+
+    @classmethod
+    def from_env(cls, agent_id: str | None = None) -> "SessionWrapper | None":
+        """Build a wrapper from AINT_AGENT_ID + AINT_KEYFILE, or None if not configured.
+
+        Opt-in by design: with no keyfile env set, returns None so callers stay unsigned and
+        unchanged. Set both env vars (e.g. for Codex's CLI: AINT_AGENT_ID=codex.aint and
+        AINT_KEYFILE=/srv/jtel-stack/brain_api/data/agent_keys/codex.key.json) and every request
+        that honours actor_headers() carries a fresh signed proof.
+        """
+        aid = agent_id or os.environ.get("AINT_AGENT_ID")
+        keyfile = os.environ.get("AINT_KEYFILE")
+        if not (aid and keyfile and Path(keyfile).exists()):
+            return None
+        try:
+            return cls(aid, keyfile)
+        except Exception:
+            return None
