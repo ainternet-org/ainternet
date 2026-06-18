@@ -84,7 +84,9 @@ class SessionWrapper:
         AINT_KEYFILE=/srv/jtel-stack/brain_api/data/agent_keys/codex.key.json) and every request
         that honours actor_headers() carries a fresh signed proof.
         """
-        aid = agent_id or os.environ.get("AINT_AGENT_ID")
+        # AINT_AGENT_ID is the deliberate signing identity (the registry-canonical .aint) and wins
+        # over a caller's display agent_id (e.g. "codex" vs the registry key "codex.aint").
+        aid = os.environ.get("AINT_AGENT_ID") or agent_id
         keyfile = os.environ.get("AINT_KEYFILE")
         if not (aid and keyfile and Path(keyfile).exists()):
             return None
