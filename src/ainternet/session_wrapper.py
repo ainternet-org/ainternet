@@ -10,6 +10,10 @@ It produces the `X-Agent-ID` / `X-Challenge` / `X-Signature` headers the brain's
 path verifies (`identity_verify.verify_identity_request`): challenge is `{nonce}:{unix_ts}`
 (fresh within a short window, anti-replay), signature is base64 Ed25519 over the challenge.
 
+AUTHORIZATION RULE: trust is structure, not a score. Authorization MUST depend ONLY on the JIS
+signature, TIBET provenance, causal forward-only order, and MUX lane policy — never on a posture
+score (the `x-jis-posture-hint`/`x-jis-trust` value is UX, never a decision input).
+
 This is the client side of the identity-binding flagship. Codex's CLI is the first runtime to
 use it (the plot twist: the agent that diagnosed its own actor-fiction gets bound first); the
 same wrapper generalizes to every runtime that announces.
