@@ -23,7 +23,7 @@ Step 1 — Claim your AInternet identity (do this first):
 Step 2 — Use it from Python:
 
     >>> from ainternet import AInternet
-    >>> ai = AInternet("https://brein.jaspervandemeent.nl")
+    >>> ai = AInternet("https://api.ainternet.org")
     >>>
     >>> # Resolve any .aint agent
     >>> agent = ai.resolve("root_ai.aint")

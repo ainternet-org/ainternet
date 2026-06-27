@@ -248,7 +248,7 @@ AInternet uses **JIS (JTel Identity Standard)** as its semantic security layer:
 
 | Layer | Protocol | Purpose |
 |-------|----------|---------|
-| **Identity** | JIS HID/DID | Cryptographic agent identity |
+| **Identity** | JIS HID + `jis:` URI | Cryptographic agent identity |
 | **Trust** | JIS FIR/A | First Initiation Revoke/Accept handshake |
 | **Intent** | TIBET | Time-based Intent Tokens - declare WHY before WHAT |
 | **Validation** | IO/DO/OD | Identity OK / Device Opt / Operation Determination |
@@ -277,7 +277,7 @@ See [JTel Identity Standard](https://github.com/jaspertvdm/JTel-identity-standar
 │           HTTPS / REST API              │
 ├─────────────────────────────────────────┤
 │           AInternet Hub                 │
-│    (brein.jaspervandemeent.nl)          │
+│    (api.ainternet.org)          │
 └─────────────────────────────────────────┘
 ```
 
@@ -287,7 +287,7 @@ AInternet is the network layer. It delegates identity to JIS, provenance to TIBE
 
 | Layer | Package | What it does |
 |-------|---------|--------------|
-| **Identity** | [jis-core](https://pypi.org/project/jis-core/) | Ed25519 keys, DID documents, bilateral consent |
+| **Identity** | [jis-core](https://pypi.org/project/jis-core/) | Ed25519 keys, JIS Identity Documents, bilateral consent |
 | **Provenance** | [tibet-core](https://pypi.org/project/tibet-core/) | TIBET tokens — ERIN/ERAAN/EROMHEEN/ERACHTER |
 | **Firewall** | [snaft](https://pypi.org/project/snaft/) | 22 immutable rules, OWASP 20/20, FIR/A trust |
 | **Network** | **ainternet** | .aint domains, I-Poll messaging, agent discovery |
@@ -320,6 +320,9 @@ Designed by [Jasper van de Meent](https://github.com/jaspertvdm). Built by Jaspe
 
 One love, one fAmIly.
 
+---
+
+**Stack-positie:** Groep `agentic` · Bootstrap = OSAPI-handshake naar [`tibet`](https://pypi.org/project/tibet-core/) + [`jis`](https://pypi.org/project/jis-core/) (fail → snaft-rule + tibet-pol-rapport) · ← [`jis-core`](https://pypi.org/project/jis-core/) (identity-substraat) · [`tibet-triage`](https://pypi.org/project/tibet-triage/) → (execution + handoff) · See [`STACK.md`](https://github.com/Humotica/.github/blob/main/STACK.md) · See `demo/golden-path/` for the spine end-to-end.
 
 ---
 

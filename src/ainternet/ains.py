@@ -12,7 +12,7 @@ Each domain maps to an AI agent with:
 - Trust score (0.0 - 1.0)
 
 Example:
-    >>> ains = AINS("https://brein.jaspervandemeent.nl")
+    >>> ains = AINS("https://api.ainternet.org")
     >>> domain = ains.resolve("root_ai.aint")
     >>> print(f"Agent: {domain.agent}")
     >>> print(f"Trust: {domain.trust_score}")
@@ -91,7 +91,7 @@ class AINS:
         timeout: Request timeout in seconds
 
     Example:
-        >>> ains = AINS("https://brein.jaspervandemeent.nl")
+        >>> ains = AINS("https://api.ainternet.org")
         >>>
         >>> # Resolve a domain
         >>> domain = ains.resolve("gemini.aint")

@@ -14,7 +14,7 @@ Flow:
 
 Example:
     >>> from ainternet import AINSClaim
-    >>> claim = AINSClaim("https://brein.jaspervandemeent.nl")
+    >>> claim = AINSClaim("https://api.ainternet.org")
     >>>
     >>> # Start claim
     >>> result = claim.start("my_agent", description="My AI assistant")

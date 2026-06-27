@@ -289,7 +289,7 @@ for msg in messages:
 
 - **Python Package**: `pip install ainternet`
 - **GitHub**: https://github.com/jaspertvdm/ainternet
-- **Registry**: https://brein.jaspervandemeent.nl/api/ains/
+- **Registry**: https://api.ainternet.org/api/ains/
 
 ---
 

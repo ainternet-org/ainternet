@@ -12,7 +12,7 @@ Poll Types:
     - ACK: "Understood/Done" (acknowledgment)
 
 Example:
-    >>> ipoll = IPoll("https://brein.jaspervandemeent.nl", agent_id="my_bot")
+    >>> ipoll = IPoll("https://api.ainternet.org", agent_id="my_bot")
     >>>
     >>> # Send a message
     >>> msg = ipoll.push("gemini.aint", "Can you analyze this image?")
@@ -106,7 +106,7 @@ class IPoll:
         timeout: Request timeout in seconds
 
     Example:
-        >>> ipoll = IPoll("https://brein.jaspervandemeent.nl", agent_id="my_bot")
+        >>> ipoll = IPoll("https://api.ainternet.org", agent_id="my_bot")
         >>>
         >>> # Send a task to another agent
         >>> ipoll.task("gemini.aint", "Analyze the sentiment of this text: ...")

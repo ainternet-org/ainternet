@@ -36,7 +36,7 @@ import requests
 # Legacy alias brein.jaspervandemeent.nl still mirrors the same API
 # and is recognised by route-truth checks below for back-compat.
 PUBLIC_AINS_BASE = "https://api.ainternet.org"
-LEGACY_AINS_BASE = "https://brein.jaspervandemeent.nl"
+LEGACY_AINS_BASE = "https://api.ainternet.org"
 LOCAL_AINS_BASE = "http://127.0.0.1:8000"
 
 _AINS_BASE_CACHE: Optional[str] = None
@@ -53,7 +53,7 @@ def _get_default_ains_base() -> str:
       1. Explicit `AINT_AINS_BASE` environment variable.
       2. Local brain_api at 127.0.0.1:8000 if reachable within 1s
          (= same-host short-circuit on JTel-brain itself).
-      3. Public AInternet name service at brein.jaspervandemeent.nl
+      3. Public AInternet name service at api.ainternet.org
          (= external clients like a fresh pixel VM on 5G).
 
     Result is cached per-process so we probe localhost at most once.
@@ -312,7 +312,7 @@ def _resolve_ipoll_url(ipoll_endpoint: str) -> str:
     string coincidence.
     """
     if (
-        "brein.jaspervandemeent.nl" in ipoll_endpoint
+        "api.ainternet.org" in ipoll_endpoint
         or "api.ainternet.org" in ipoll_endpoint
     ):
         try:
@@ -542,7 +542,7 @@ def main():
     parser.add_argument("--ains-base", default=None,
                         help="AINS endpoint base "
                              "(default: auto — local brain_api if "
-                             "reachable, otherwise brein.jaspervandemeent.nl)")
+                             "reachable, otherwise api.ainternet.org)")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Show each pipeline step on stderr")
     parser.add_argument("--json", action="store_true", help="Output result as JSON")

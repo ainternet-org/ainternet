@@ -97,6 +97,7 @@ def main():
     {GREEN}claim{RESET} <domain>               Claim a .aint domain
     {GREEN}send{RESET} <to> <msg> [--from id]  Send a message
     {GREEN}receive{RESET} <agent>              Check inbox
+    {GREEN}attach{RESET} <raint> --key <k>     Open your enclave (remote probe lane)
     {GREEN}status{RESET}                       Network health
 
   {BOLD}Quick start:{RESET}
@@ -422,6 +423,27 @@ def main():
         if st:
             print(f"  Status       {GREEN}{st}{RESET}")
         print()
+
+    elif cmd == "attach":
+        # open your enclave from anywhere: identity-gated probe lane over <hub>/arena.probe.
+        from .attach import attach_remote, DEFAULT_HUB
+        rest = sys.argv[2:]
+        raint = next((a for a in rest if not a.startswith("--")), None)
+
+        def _opt(flag, default=None):
+            return rest[rest.index(flag) + 1] if flag in rest and rest.index(flag) + 1 < len(rest) else default
+        key = _opt("--key")
+        hub = _opt("--hub") or _opt("--remote") or DEFAULT_HUB
+        if "--fresh" in rest:
+            print(f"  {YELLOW}!{RESET} --fresh (spin up a new target) needs an arena claim first.")
+            print(f"  Redeem an invite to get a session key + target, then: "
+                  f"{BOLD}ainternet attach <raint> --key <key> --remote{RESET}")
+            return
+        if not raint or not key:
+            print(f"  {RED}✗{RESET} usage: {BOLD}ainternet attach <raint> --key <key-or-hex> [--remote <hub>]{RESET}")
+            print(f"  {DIM}the session key from YOUR claim opens the lane; default hub {DEFAULT_HUB}{RESET}")
+            return
+        return attach_remote(raint, key, hub)
 
     else:
         print(f"  {RED}✗{RESET} Unknown command: {cmd}")
