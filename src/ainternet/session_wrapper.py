@@ -24,6 +24,9 @@ import base64
 import json
 import os
 import secrets
+import shutil
+import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -40,8 +43,46 @@ class SessionWrapper:
         self._sk = self._load_key(Path(keyfile))
 
     @staticmethod
+    def _materialize_sealed(path: Path) -> dict:
+        """Unseal a TBZ-sealed (.tza) keyfile through the Airlock at LOAD time.
+
+        The at-rest form is never a plain bearer file. The plaintext exists only ephemerally
+        in a tmpdir wiped before this returns; the materialize is the login/fetch moment (the
+        runtime pulls a *sealed* envelope and opens it behind the gate, not a flat object).
+        Full bearer-elimination = TPM sign-inside; on a software box this is the defense-in-depth
+        tier: tamper-evident envelope + Airlock + a custodian key that gates the unseal.
+        """
+        custodian = os.environ.get("AINT_KEY_CUSTODIAN")
+        if not custodian or not Path(custodian).exists():
+            raise ValueError("sealed keyfile needs AINT_KEY_CUSTODIAN (recipient privkey path)")
+        cpath = Path(custodian)
+        try:  # custodian = a key.json with a private_key field, or a raw hex file
+            priv_hex = json.loads(cpath.read_text(encoding="utf-8")).get("private_key")
+        except Exception:
+            priv_hex = cpath.read_text(encoding="utf-8").strip()
+        if not priv_hex:
+            raise ValueError(f"no private key in custodian {cpath}")
+        tmp = Path(tempfile.mkdtemp(prefix="aint-mat-"))
+        try:
+            hexf = tmp / "cust.hex"
+            hexf.write_text(priv_hex, encoding="utf-8")
+            hexf.chmod(0o600)
+            subprocess.run(
+                ["tbz", "unpack", str(path), "--as", str(hexf), "-o", str(tmp), "--no-preview"],
+                check=True, capture_output=True,
+            )
+            inner = next(p for p in tmp.iterdir() if p.name.endswith(".json"))
+            return json.loads(inner.read_text(encoding="utf-8"))
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    @staticmethod
     def _load_key(path: Path) -> Ed25519PrivateKey:
-        d = json.loads(path.read_text(encoding="utf-8"))
+        data = path.read_bytes()
+        if data[:3] == b"TBZ" or path.suffix == ".tza":
+            d = SessionWrapper._materialize_sealed(path)
+        else:
+            d = json.loads(data.decode("utf-8"))
         raw = d.get("private_key") or d.get("secret_key") or d.get("seed")
         if not raw:
             raise ValueError(f"no private key field in {path}")
